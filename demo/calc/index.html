@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <script src="/buffered-scopes/bower_components/underscore/underscore-min.js"></script>
+    <script src="/buffered-scopes/bower_components/requirejs-bower/require.js"></script>
+    <script src="/buffered-scopes/bower_components/q/q.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+
+<div>
+    x1 <input onchange="onX1(this.value)">
+</div>
+<div>
+    x2 <input onchange="onX2(this.value)">
+</div>
+<div>
+    sign <input onchange="onSym(this.value)">
+</div>
+<div>
+    result: <span id="res"/>
+</div>
+
+</body>
+</html>
