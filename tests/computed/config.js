@@ -6,22 +6,21 @@ require.config({
     paths: {
         'c': '../../utils/computed'
     },
-    deps: [
-    ],
+    deps: [],
     callback: function () {
         var specs = [
-            'specs/pubSub'
+            'domain',
+            'observable',
+            'pubSub'
         ];
 
         (function getSpec(id) {
             if (id == specs.length) {
-                setTimeout(function(){
-                    window.onload();
-                }, 1000);
+                window.onload();
                 return;
             }
 
-            require([specs[id]], function () {
+            require(['specs/' + specs[id]], function () {
                 getSpec(id + 1);
             });
         })(0);

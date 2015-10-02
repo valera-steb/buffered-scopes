@@ -2,7 +2,7 @@
  * Created on 17.09.2015.
  */
 define(['c/PubSub'], function (PubSub) {
-    describe('PubSub', function () {
+    describe('Computed/PubSub', function () {
 
         var subs;
 
@@ -66,5 +66,7 @@ define(['c/PubSub'], function (PubSub) {
 
             expect(test.length).toBe(2);
         });
+
+        xit('должен перехватывать исключение в обработчиках')
     });
 });
