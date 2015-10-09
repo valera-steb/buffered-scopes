@@ -14,6 +14,7 @@ require.config({
     callback: function () {
         var specs = [
             'domain',
+            'computed',
             'observable',
             'pubSub'
         ];

@@ -2,7 +2,7 @@
  * Created on 29.09.2015.
  */
 define(['c/Observable'], function (Observable) {
-    describe('Computet/Observable', function () {
+    describe('Computed/Observable', function () {
         var o, iDomain;
 
         beforeEach(function (done) {
@@ -47,7 +47,7 @@ define(['c/Observable'], function (Observable) {
             expect(o()).toBe(undefined);
         });
 
-        it('должен оповещать подписанных о новом значении', function () {
+        it('должен оповещать подписанных о новом значении (new, old)', function () {
             var t = 'test',
                 t2;
 
@@ -60,6 +60,20 @@ define(['c/Observable'], function (Observable) {
             expect(t2).toBe(t);
         });
 
+        xit('должен оповешать после изменения значения (new, old)');
+
+        it('при оповещении домена, должен передавать свой uid', function () {
+            iDomain.addUid = true;
+            expect(iDomain.log).toBe('');
+
+            o();
+            var o2 = iDomain.makeObservable();
+            o2(10);
+            o(1);
+
+            expect(iDomain.log).toBe('+g1+s2-s2+s1-s1');
+        });
+
         it('должен оповещать домен о считывании данных', function () {
             expect(iDomain.log).toBe('');
 
@@ -68,12 +82,12 @@ define(['c/Observable'], function (Observable) {
             expect(iDomain.log).toBe('+g');
         });
 
-        it('должен оповещать домен о записи данных (до и после оповещения зависимостей)', function(){
+        it('должен оповещать домен о записи данных (до и после оповещения зависимостей)', function () {
             expect(iDomain.log).toBe('');
 
             o(10);
 
             expect(iDomain.log).toBe('+s-s');
-        })
+        });
     });
 });

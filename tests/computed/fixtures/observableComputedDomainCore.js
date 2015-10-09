@@ -2,17 +2,21 @@
  * Created on 09.10.2015.
  */
 define(['c/Observable'], function () {
-    function f() {
-    };
-
     function ObservableComputedDomainCore(ctx) {
-        var self = this;
+        var self = this,
+            uid = 0;
+
         this.log = '';
+        this.addUid = false;
+
 
         function makeLogger(key) {
-            return function () {
+            return function (uid) {
                 console.log(key);
                 self.log += key;
+
+                if (self.addUid)
+                    self.log += uid;
             }
         }
 
@@ -28,7 +32,7 @@ define(['c/Observable'], function () {
         };
 
         this.makeObservable = function (value) {
-            var constructor = ctx.get('observableConstructor');
+            var constructor = ctx.create('observableConstructor', ++uid);
             return constructor.getObservable(value);
         };
     }

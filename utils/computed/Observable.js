@@ -2,27 +2,22 @@
  * Created on 29.09.2015.
  */
 define(['./PubSub'], function (PubSub) {
-    function ObservableConstructor() {
+    function ObservableConstructor(uid) {
         var self = this, m, core;
 
         m = {
             value: undefined,
 
             subs: new PubSub(),
+            subsAfter: new PubSub(),
 
             setValue: function (newValue) {
-                core.enter.setValue();
+                var oldValue = m.value;
 
-                m.subs.notify(newValue);
+                m.subs['notify'](newValue);
                 m.value = newValue;
 
-                core.exit.setValue();
-            },
-
-            getValue: function () {
-                core.enter.getValue();
-
-                return m.value;
+                m.subsAfter['notify'](oldValue);
             }
         };
 
@@ -35,19 +30,31 @@ define(['./PubSub'], function (PubSub) {
             m.value = value;
 
             function Observable() {
-                if (arguments.length > 0)
-                    m.setValue(arguments[0]);
-                else
-                    return m.getValue();
+                if (arguments.length == 0) {
+                    core.enter.getValue(uid);
+                    return m.value;
+                }
+
+                core.enter.setValue(uid);
+                m.setValue(arguments[0]);
+                core.exit.setValue(uid);
             }
 
             Observable['subscribe'] = function (handler) {
-                return m.subs.subscribe(function (newValue) {
+                return m.subs['subscribe'](function (newValue) {
+                    handler(newValue, m.value);
+                });
+            };
+            Observable['subscribeAfter'] = function (handler) {
+                return m.subs['subscribe'](function (newValue) {
                     handler(newValue, m.value);
                 });
             };
 
-            Observable['clear'] = m.subs.clear;
+            Observable['clear'] = function () {
+                m.subs.clear();
+                m.subsAfter.clean();
+            };
 
             return Observable;
         };

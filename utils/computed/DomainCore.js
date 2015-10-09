@@ -4,10 +4,12 @@
 define(['./Observable', './Computed'], function () {
     function ComputedDomainCore(ctx) {
         var f = function(){};
+        uid = 0;
 
         this.buildInterface = function (outer) {
             outer['makeObservable'] = function (value) {
-                return new Observable(toObservable, value);
+                var constructor = ctx.create('observableConstructor', ++uid);
+                return constructor.getObservable(value);
             };
 
             outer['makeComputed'] = function (f) {

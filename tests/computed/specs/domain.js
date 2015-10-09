@@ -20,7 +20,7 @@ define(['require_for_di-lite', 'c/Domain', 'c/Observable'], function (CtxProvide
         });
 
 
-        it('должен создавать observable', function () {
+        xit('должен создавать observable', function () {
             //var o = d.makeObservable();
             console.log(domain);
 
@@ -28,24 +28,29 @@ define(['require_for_di-lite', 'c/Domain', 'c/Observable'], function (CtxProvide
             //expect(d.subscribe).toBeDefined();
         });
 
-        xit('должен создавать computed');
+        xit('должен создавать computed (функция расчёта значения обязательна)');
 
 
         describe('при создании', function () {
-            xit('computed должен запоминать список использованных в нём observable');
-
-            xit('computed должен запоминать список использованных в нём computed');
-
             xit('должен присваивать уникальный ид объекту observable');
 
             xit('должен присваивать уникальный ид объекту computed');
+
         });
 
 
-        describe('при изменении', function () {
-            xit('дочернего observable пересчитать computed');
+        describe('при создании computed', function(){
+            xit('должен строить список использованных в нём observable');
 
-            xit('дочернего computed пересчитать данный computed');
+            xit('должен строить список использованных в нём computed');
+
+            xit('элементы списка должны быть уникальны (для с1: c2, o2): c1(c2, o2), c2(o1, o2)');
+
+            xit('можно создать другой computed (при этом первый будет зависить ' +
+                'от второго, но не от элементов второго, если они не используються напрямую)');
+
+            xit('можно создать observable. Если не запрашивать его значение, ' +
+                'то от него не будет зависить создаваемый compute');
         });
 
 
