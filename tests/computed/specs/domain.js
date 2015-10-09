@@ -34,7 +34,11 @@ define(['require_for_di-lite', 'c/Domain', 'c/Observable'], function (CtxProvide
         describe('при создании', function () {
             xit('computed должен запоминать список использованных в нём observable');
 
-            xit('при создении computed должен запоминать список использованных в нём computed');
+            xit('computed должен запоминать список использованных в нём computed');
+
+            xit('должен присваивать уникальный ид объекту observable');
+
+            xit('должен присваивать уникальный ид объекту computed');
         });
 
 

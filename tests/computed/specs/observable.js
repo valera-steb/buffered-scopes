@@ -5,18 +5,31 @@ define(['c/Observable'], function (Observable) {
     describe('Computet/Observable', function () {
         var o, iDomain;
 
-        beforeEach(function () {
-            iDomain = {};
-            o = new Observable(iDomain);
+        beforeEach(function (done) {
+
+            function receiveDomain(ctx) {
+                iDomain = ctx.get('computedDomainCore');
+                o = iDomain.makeObservable();
+                done();
+            }
+
+            require(['require_for_di-lite'], function (Provider) {
+                (new Provider).buildCtx(
+                    ['fixtures/observableComputedDomainCore'],
+                    receiveDomain
+                );
+            });
         });
+
 
         it('должен отдавать значение по умолчанию (undefined)', function () {
             expect(o()).toBeUndefined();
         });
 
+
         it('должен отдавать предустановленно значение (при его наличии)', function () {
             var t = 'test';
-            o = new Observable(iDomain, t);
+            o = iDomain.makeObservable(t);
 
             expect(o()).toBe(t);
         });
@@ -47,8 +60,20 @@ define(['c/Observable'], function (Observable) {
             expect(t2).toBe(t);
         });
 
-        it('должен оповещать домен о считывании данных', function(){
+        it('должен оповещать домен о считывании данных', function () {
+            expect(iDomain.log).toBe('');
 
+            o();
+
+            expect(iDomain.log).toBe('+g');
         });
+
+        it('должен оповещать домен о записи данных (до и после оповещения зависимостей)', function(){
+            expect(iDomain.log).toBe('');
+
+            o(10);
+
+            expect(iDomain.log).toBe('+s-s');
+        })
     });
 });

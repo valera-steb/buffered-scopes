@@ -27,17 +27,18 @@ define(['./PubSub'], function (PubSub) {
         };
 
 
-        this.dependencies = "computedDomainCore=core";
+        this.dependencies = "core=computedDomainCore";
 
 
-        this.getObservable = function () {
+        this.getObservable = function (value) {
             core = self.core.forObservable;
+            m.value = value;
 
             function Observable() {
                 if (arguments.length > 0)
-                    setValue(arguments[0]);
+                    m.setValue(arguments[0]);
                 else
-                    return getValue();
+                    return m.getValue();
             }
 
             Observable['subscribe'] = function (handler) {
@@ -47,6 +48,8 @@ define(['./PubSub'], function (PubSub) {
             };
 
             Observable['clear'] = m.subs.clear;
+
+            return Observable;
         };
     }
 
