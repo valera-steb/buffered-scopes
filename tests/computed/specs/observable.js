@@ -10,7 +10,7 @@ define(['c/Observable'], function (Observable) {
             o = new Observable(iDomain);
         });
 
-        it('должен отдавать значение по умолчанию', function () {
+        it('должен отдавать значение по умолчанию (undefined)', function () {
             expect(o()).toBeUndefined();
         });
 

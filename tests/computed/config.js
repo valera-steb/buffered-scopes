@@ -6,7 +6,11 @@ require.config({
     paths: {
         'c': '../../utils/computed'
     },
-    deps: [],
+    map: {
+        '*': {'when': '../../bower_components/when/when'}
+    },
+    deps: ['../../utils/require_for_di-lite'],
+
     callback: function () {
         var specs = [
             'domain',
