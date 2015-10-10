@@ -11,12 +11,16 @@ define(['c/Observable'], function () {
 
 
         function makeLogger(key) {
-            return function (uid) {
+            return function (uid, f) {
                 console.log(key);
                 self.log += key;
 
-                if (self.addUid)
-                    self.log += uid;
+                if (!self.addUid)
+                    return;
+
+                self.log += uid;
+                if (f)
+                    self.log += 'f';
             }
         }
 

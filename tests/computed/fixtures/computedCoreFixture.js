@@ -10,12 +10,12 @@ define(['c/Computed'], function(){
         this.forComputed ={
             enter: {
                 calculation: f,
-                getValue: f,
-                setValue: f
+                getValue: f, // нужен для оповещения других о том что этот прослушивается
+                init: f // нужен для отслеживания зависимостей создаваемого
             },
             exit: {
                 calculation: f,
-                setValue: f
+                init: f
             }
         };
 

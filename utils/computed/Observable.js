@@ -17,6 +17,7 @@ define(['./PubSub'], function (PubSub) {
                 m.subs['notify'](newValue);
                 m.value = newValue;
 
+
                 m.subsAfter['notify'](oldValue);
             }
         };
@@ -31,7 +32,7 @@ define(['./PubSub'], function (PubSub) {
 
             function Observable() {
                 if (arguments.length == 0) {
-                    core.enter.getValue(uid);
+                    core.enter.getValue(uid, Observable['subscribeAfter']);
                     return m.value;
                 }
 
@@ -46,8 +47,8 @@ define(['./PubSub'], function (PubSub) {
                 });
             };
             Observable['subscribeAfter'] = function (handler) {
-                return m.subs['subscribe'](function (newValue) {
-                    handler(newValue, m.value);
+                return m.subsAfter['subscribe'](function (oldValue) {
+                    handler(m.value, oldValue);
                 });
             };
 

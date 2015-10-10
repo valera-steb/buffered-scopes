@@ -3,7 +3,7 @@
  */
 define(['./Observable', './Computed'], function () {
     function ComputedDomainCore(ctx) {
-        var f = function(){};
+        var f = function(){},
         uid = 0;
 
         this.buildInterface = function (outer) {

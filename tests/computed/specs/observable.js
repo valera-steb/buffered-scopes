@@ -47,22 +47,39 @@ define(['c/Observable'], function (Observable) {
             expect(o()).toBe(undefined);
         });
 
-        it('должен оповещать подписанных о новом значении (new, old)', function () {
-            var t = 'test',
-                t2;
+        it('должен оповещать подписанных о новом значении (new, old), до изменения', function () {
+            var
+                t1 = 't1', t2 = 't2', called;
+            o(t1);
 
-            o.subscribe(function (v) {
-                t2 = v;
+            o.subscribe(function(n, old){
+                expect(n).toBe(t2);
+                expect(old).toBe(t1);
+                expect(o()).toBe(t1);
+                called = true;
             });
+            o(t2);
 
-            o(t);
-
-            expect(t2).toBe(t);
+            expect(called).toBeTruthy();
         });
 
-        xit('должен оповешать после изменения значения (new, old)');
+        it('должен оповешать после изменения значения (new, old)', function(){
+            var
+                t1 = 't1', t2 = 't2', called;
+            o(t1);
 
-        it('при оповещении домена, должен передавать свой uid', function () {
+            o.subscribeAfter(function(n, old){
+                expect(n).toBe(t2);
+                expect(old).toBe(t1);
+                expect(o()).toBe(t2);
+                called = true;
+            });
+            o(t2);
+
+            expect(called).toBeTruthy();
+        });
+
+        it('при оповещении домена, должен передавать свой uid и при чтении функцию subscribeAfter', function () {
             iDomain.addUid = true;
             expect(iDomain.log).toBe('');
 
@@ -70,8 +87,9 @@ define(['c/Observable'], function (Observable) {
             var o2 = iDomain.makeObservable();
             o2(10);
             o(1);
+            o2();
 
-            expect(iDomain.log).toBe('+g1+s2-s2+s1-s1');
+            expect(iDomain.log).toBe('+g1f+s2-s2+s1-s1+g2f');
         });
 
         it('должен оповещать домен о считывании данных', function () {
@@ -89,5 +107,9 @@ define(['c/Observable'], function (Observable) {
 
             expect(iDomain.log).toBe('+s-s');
         });
+
+        xit('должен позволять отписываться произвольному слушателю');
+
+        xit('должен позволять отписывать всех слушателей');
     });
 });

@@ -14,7 +14,20 @@ define(['./PubSub'], function (PubSub) {
             dependencies: undefined,
 
             calculate: function () {
-                m.value = m.f();
+                core.enter.calculation(uid);
+                var newValue = m.f();
+                core.exit.calculation(uid);
+
+                m.setValue(newValue);
+            },
+
+            setValue: function(newValue){
+                var oldValue = m.value;
+
+                m.subs['notify'](newValue);
+                m.value = newValue;
+
+                m.subsAfter['notify'](oldValue);
             },
 
             init: {
@@ -25,13 +38,15 @@ define(['./PubSub'], function (PubSub) {
                     m.subscribe();
                 },
                 getDependencies: function () {
-                    core.enter.calculation(uid);
+                    core.enter.init(uid);
                     m.calculate();
-                    m.dependencies = core.exit.calculation(uid);
+
+                    m.dependencies = core.exit.init(uid);
+                    m.subscribe();
                 },
                 subscribe: function(){
                     for(var i in m.dependencies){
-                        m.dependencies[i]['subscribeAfter']
+                        m.dependencies[i]['subscribeAfter'](m.calculate);
                     }
                 }
             }
@@ -46,7 +61,7 @@ define(['./PubSub'], function (PubSub) {
             m.init(f);
 
             function Computed() {
-                core.enter.getValue(uid);
+                core.enter.getValue(uid, Computed['subscribeAfter']);
 
                 return m.value;
             }
@@ -54,6 +69,11 @@ define(['./PubSub'], function (PubSub) {
             Computed['subscribe'] = function (handler) {
                 return m.subs['subscribe'](function (newValue) {
                     handler(newValue, m.value);
+                });
+            };
+            Computed['subscribeAfter'] = function (handler) {
+                return m.subsAfter['subscribe'](function (oldValue) {
+                    handler(m.value, oldValue);
                 });
             };
 
