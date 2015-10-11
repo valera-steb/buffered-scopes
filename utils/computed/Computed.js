@@ -11,6 +11,7 @@ define(['./PubSub'], function (PubSub) {
             f: undefined,
 
             subs: new PubSub(),
+            subsAfter: new PubSub(),
             dependencies: undefined,
 
             calculate: function () {
@@ -30,26 +31,39 @@ define(['./PubSub'], function (PubSub) {
                 m.subsAfter['notify'](oldValue);
             },
 
-            init: {
+            init:function (f) {
+                m.f = f;
+
+                core.enter.build(uid);
+                m.calculate();
+
+                m.dependencies = core.exit.build(uid);
+
+                for(var i in m.dependencies){
+                    m.dependencies[i] = m.dependencies[i](m.calculate);
+                }
+            }
+/*
+            {
                 start: function (f) {
                     m.f = f;
 
-                    m.getDependencies();
-                    m.subscribe();
+                    m.init.getDependencies();
+                    m.init.subscribe();
                 },
                 getDependencies: function () {
                     core.enter.init(uid);
                     m.calculate();
 
                     m.dependencies = core.exit.init(uid);
-                    m.subscribe();
                 },
                 subscribe: function(){
                     for(var i in m.dependencies){
-                        m.dependencies[i]['subscribeAfter'](m.calculate);
+                        m.dependencies[i](m.calculate);
                     }
                 }
             }
+*/
         };
 
 

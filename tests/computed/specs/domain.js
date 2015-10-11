@@ -1,14 +1,11 @@
 /**
  * Created on 29.09.2015.
  */
-define(['require_for_di-lite', 'c/Domain', 'c/Observable'], function (CtxProvider, Domain, Observable) {
+define(['require_for_di-lite'], function (CtxProvider) {
     describe('Computed/Domain', function () {
-        var d,
-            domain;
+        var domain;
 
         beforeEach(function (done) {
-            //d = new Domain();
-
             (new CtxProvider())
                 .buildCtx(['c/Domain'], function (ctx) {
                     ctx.get('ComputedDomain')
@@ -42,12 +39,13 @@ define(['require_for_di-lite', 'c/Domain', 'c/Observable'], function (CtxProvide
             });
         });
 
-        xit('должен создавать observable', function () {
-            //var o = d.makeObservable();
+        it('должен создавать observable', function () {
+            var o = domain.makeObservable();
             console.log(domain);
 
             expect(o).toBeDefined();
-            //expect(d.subscribe).toBeDefined();
+            expect(o.subscribe).toBeDefined();
+            expect(o.subscribeAfter).toBeDefined();
         });
 
         xit('должен создавать computed (функция расчёта значения обязательна)');
@@ -66,7 +64,7 @@ define(['require_for_di-lite', 'c/Domain', 'c/Observable'], function (CtxProvide
         });
 
 
-        describe('при создании computed', function(){
+        describe('при создании computed', function () {
             xit('должен строить список использованных в нём observable');
 
             xit('должен строить список использованных в нём computed');

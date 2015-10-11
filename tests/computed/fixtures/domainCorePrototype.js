@@ -50,8 +50,63 @@ define(['c/Observable', 'c/Computed'], function () {
 
 
         var m = {
-            setLocker: new SetLocker(),
-            afterNotifyLocker: new SetLocker()
+            setLocker: {
+                settingTo: null,
+
+                enter: function (id) {
+                    if (m.setLocker.settingTo != null)
+                        throw new Error('cycle in set value ' + id);
+                    if (m.tracker.building != null)
+                        throw new Error('Нельзя устанавливать значение в computed function');
+
+                    m.setLocker.settingTo = id;
+                },
+                exit: function (id) {
+                    if (m.setLocker.settingTo != id)
+                        throw new Error('setLocker error: enter to ' + m.setLocker.id + ', exit from ' + id);
+
+                    m.setLocker.settingTo = null;
+                }
+            },
+
+            tracker: {
+                building: null,
+                dependencies: {},
+
+                start: function (id) {
+                    if (m.tracker.building)
+                        throw new Error('can`t build computed inside computed function');
+
+                    m.tracker.building = id;
+                    m.tracker.dependencies = {};
+                },
+
+                trackGet: function (id, subscribe) {
+                    if (m.tracker.building == null)
+                        return;
+
+                    m.tracker.dependencies[id] = subscribe;
+                },
+
+                end: function (id) {
+                    if (m.tracker.building != id)
+                        throw new Error('Попытка закончить построение другого computed');
+
+                    m.tracker.building = null;
+                    return m.utils.toArray(m.tracker.dependencies);
+                }
+            },
+
+            utils: {
+                toArray: function (obj) {
+                    var arr = [];
+
+                    for (var i in obj)
+                        arr.push(obj[i]);
+
+                    return arr;
+                }
+            }
         };
 
 
@@ -62,7 +117,7 @@ define(['c/Observable', 'c/Computed'], function () {
             };
 
             outer['makeComputed'] = function (f) {
-                var constructor = ctx.create('computedConstructor', self.itemsList);
+                var constructor = ctx.create('computedConstructor', ++uid);
                 return constructor.getComputed(f);
             };
         };
@@ -70,14 +125,16 @@ define(['c/Observable', 'c/Computed'], function () {
 
         this.forObservable = {
             enter: {
-                getValue: utils.makeLogger(self, '+og'),
+                getValue: function (id, subscribe) {
+                    utils.addLog(id, subscribe, self, '+og');
+                    m.tracker.trackGet(id, subscribe);
+                },
                 setValue: function (id) {
                     utils.addLog(id, undefined, self, '+os');
                     m.setLocker.enter(id);
                 }
             },
             exit: {
-                getValue: utils.makeLogger(self, '-og'),
                 setValue: function (id) {
                     utils.addLog(id, undefined, self, '-os');
                     m.setLocker.exit(id);
@@ -87,12 +144,22 @@ define(['c/Observable', 'c/Computed'], function () {
 
         this.forComputed = {
             enter: {
-                getValue: f,
-                setValue: f
+                build: function (id) {
+                    utils.addLog(id, undefined, self, '+cb');
+                    m.tracker.start(id);
+                },
+                getValue: function (id, subscribe) {
+                    utils.addLog(id, subscribe, self, '+cg');
+                    m.tracker.trackGet(id, subscribe);
+                },
+                calculation: f
             },
             exit: {
-                getValue: f,
-                setValue: f
+                build: function (id) {
+                    utils.addLog(id, undefined, self, '-cb');
+                    return m.tracker.end(id);
+                },
+                calculation: f
             }
         };
     }
