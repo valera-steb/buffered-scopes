@@ -22,24 +22,6 @@ define(['c/Observable', 'c/Computed'], function () {
 
     };
 
-    function SetLocker() {
-        var items = new Set();
-
-
-        this.enter = function (id) {
-            if (items.has(id))
-                throw new Error('cycle dependence for element ' + id);
-
-            items.add(id);
-        };
-        this.exit = function (id) {
-            items.delete(id);
-        };
-        this.clean = function () {
-            items = new Set();
-        };
-    }
-
     function ComputedDomainCore(ctx) {
         var f = function () {
             },
@@ -97,6 +79,62 @@ define(['c/Observable', 'c/Computed'], function () {
                 }
             },
 
+            finalizer: {
+                isInFinalization: false,
+                completions: [],
+                executed: [],
+                cycleNumber: 0,
+                maxCycle: 10,
+
+                complete: function () {
+                    if (m.finalizer.isInFinalization)
+                        return;
+
+                    if (m.finalizer.completions.length == 0)
+                        return;
+
+                    console.info('start finalization ', m.finalizer.completions.length);
+                    m.finalizer.isInFinalization = true;
+
+                    while (m.finalizer.completions.length > 0) {
+                        console.info('enter finalizer ', m.finalizer.completions.length);
+                        m.finalizer.enterNext();
+
+                        try {
+                            var f = m.finalizer.completions.splice(0, 1)[0];
+                            f();
+                            m.finalizer.executed.push(f.toString());
+                        }
+                        catch (e) {
+                            console.error('error in finalizer', e);
+                        }
+                    }
+
+                    console.info('done finalization ', m.finalizer.executed);
+
+                    m.finalizer.cycleNumber = 0;
+                    m.finalizer.isInFinalization = false;
+                    m.finalizer.executed = [];
+                },
+
+                enterNext: function () {
+                    if (m.finalizer.cycleNumber >= m.finalizer.maxCycle)
+                        throw new Error('Слишком много продолжений ',
+                            m.finalizer.executed,
+                            m.finalizer.completions);
+
+                    m.finalizer.cycleNumber++;
+                },
+
+                then: function (f) {
+                    if (m.tracker.building == null
+                        && m.setLocker.settingTo == null)
+                        throw new Error('Нельзя создавать продолжения вне действия');
+
+                    m.finalizer.completions.push(f);
+                }
+            },
+
             utils: {
                 toArray: function (obj) {
                     var arr = [];
@@ -120,6 +158,8 @@ define(['c/Observable', 'c/Computed'], function () {
                 var constructor = ctx.create('computedConstructor', ++uid);
                 return constructor.getComputed(f);
             };
+
+            outer['afterActiveChanges'] = m.finalizer.then;
         };
 
 
@@ -138,6 +178,7 @@ define(['c/Observable', 'c/Computed'], function () {
                 setValue: function (id) {
                     utils.addLog(id, undefined, self, '-os');
                     m.setLocker.exit(id);
+                    m.finalizer.complete();
                 }
             }
         };
@@ -160,7 +201,8 @@ define(['c/Observable', 'c/Computed'], function () {
                     return m.tracker.end(id);
                 },
                 calculation: f
-            }
+            },
+            finalizeBuild: m.finalizer.complete
         };
     }
 

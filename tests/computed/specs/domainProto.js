@@ -99,7 +99,7 @@ define(['require_for_di-lite'], function (CtxProvider) {
             expect(c1()).toBe(t[1]);
         });
 
-        it('в функции computed-a, запрещено создавать computed (выкинет исключение)', function(){
+        it('в функции computed-a, запрещено создавать computed (выкинет исключение)', function () {
             var
                 t = ['t0', 't1', 't2'],
                 c1, c2;
@@ -170,8 +170,100 @@ define(['require_for_di-lite'], function (CtxProvider) {
         });
 
 
-        describe('после изменения', function(){
+        describe('после изменения', function () {
+            var t, o1;
 
+            beforeEach(function () {
+                t = ['t0', 't1', 't2', 't3', 't4', 't5'];
+                o1 = d.makeObservable(t[1]);
+            });
+
+            it('позволяет добавить действие в обработчике подписки', function () {
+                var called;
+
+                o1.subscribe(function () {
+                    d.afterActiveChanges(function () {
+                        called = true;
+                    });
+                });
+                o1(t[2]);
+
+                expect(called).toBeTruthy();
+            });
+
+            it('позволяет добавить действие в обработчике ф-ции computed', function () {
+                var c = d.makeComputed(function () {
+                    var o = o1();
+                    d.afterActiveChanges(function () {
+                        if (o != t[0])
+                            o1(t[0]);
+                    });
+                    return o;
+                });
+
+                expect(o1()).toBe(t[0]);
+                expect(c()).toBe(t[0]);
+
+
+                o1(t[2]);
+
+                expect(o1()).toBe(t[0]);
+                expect(c()).toBe(t[0]);
+            });
+
+            it('нельзя добавить за пределами обработчика/функции', function () {
+                function test() {
+                    d.afterActiveChanges();
+                }
+
+                expect(test).toThrow();
+            });
+
+            it('в действии можно изменять observable', function () {
+                o1.subscribe(function (v) {
+                    d.afterActiveChanges(function () {
+                        if (v != t[0])
+                            o1(t[0]);
+                    });
+                });
+                expect(o1()).toBe(t[1]);
+
+                o1(t[3]);
+                expect(o1()).toBe(t[0]);
+            });
+
+            it('в действии можно создавать computed', function(){
+                var c;
+
+                function after(){
+                    c = d.makeComputed(function(){
+                        return o1()+t[4];
+                    });
+                }
+
+                o1.subscribe(function(){
+                    d.afterActiveChanges(after);
+                });
+                expect(c).toBeUndefined();
+
+
+                o1(t[0]);
+                expect(c()).toBe(t[0]+t[4]);
+            });
+
+            it('количество продолжений ограниченно', function () {
+                o1.subscribe(function () {
+                    d.afterActiveChanges(function () {
+                            o1(t[0]);
+                    });
+                });
+
+                function test(){
+                    o1(t[3]);
+                }
+
+                expect(test).toThrow();
+            });
         });
     });
 });

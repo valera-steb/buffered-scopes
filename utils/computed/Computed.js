@@ -42,6 +42,8 @@ define(['./PubSub'], function (PubSub) {
                 for(var i in m.dependencies){
                     m.dependencies[i] = m.dependencies[i](m.calculate);
                 }
+
+                core.finalizeBuild();
             }
 /*
             {
