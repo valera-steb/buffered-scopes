@@ -2,13 +2,13 @@
  * Created on 07.10.2015.
  */
 define(['./Observable', './Computed'], function () {
-    function ComputedDomainCore(ctx) {
+    function ComputedDomainCore(p) {
         var f = function(){},
         uid = 0;
 
         this.buildInterface = function (outer) {
             outer['makeObservable'] = function (value) {
-                var constructor = ctx.create('observableConstructor', ++uid);
+                var constructor = p.ctx.create('observableConstructor', ++uid);
                 return constructor.getObservable(value);
             };
 

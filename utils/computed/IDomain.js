@@ -2,17 +2,17 @@
  * Created by steb on 12.10.15.
  */
 define(['require_for_di-lite/privateScopeWrapper'], function(Wrapper){
-    function IDomain(ctx){
+    function IDomain(p){
         var m;
 
         this.buildInterface = function (outer) {
             outer['makeObservable'] = function (value) {
-                var constructor = ctx.create('observableConstructor', ++m.uid);
+                var constructor = p.ctx.create('observableConstructor', ++m.uid);
                 return constructor.getObservable(value);
             };
 
             outer['makeComputed'] = function (f) {
-                var constructor = ctx.create('computedConstructor', ++m.uid);
+                var constructor = p.ctx.create('computedConstructor', ++m.uid);
                 return constructor.getComputed(f);
             };
 

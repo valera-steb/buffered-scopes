@@ -22,7 +22,7 @@ define(['c/Observable', 'c/Computed'], function () {
 
     };
 
-    function ComputedDomainCore(ctx) {
+    function ComputedDomainCore(p) {
         var f = function () {
             },
             uid = 0, self = this;
@@ -150,12 +150,12 @@ define(['c/Observable', 'c/Computed'], function () {
 
         this.buildInterface = function (outer) {
             outer['makeObservable'] = function (value) {
-                var constructor = ctx.create('observableConstructor', ++uid);
+                var constructor = p.ctx.create('observableConstructor', ++uid);
                 return constructor.getObservable(value);
             };
 
             outer['makeComputed'] = function (f) {
-                var constructor = ctx.create('computedConstructor', ++uid);
+                var constructor = p.ctx.create('computedConstructor', ++uid);
                 return constructor.getComputed(f);
             };
 

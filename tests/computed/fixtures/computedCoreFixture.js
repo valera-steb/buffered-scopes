@@ -4,7 +4,7 @@
 define(['c/Computed'], function(){
     var f = function(){};
 
-    function ComputedCoreFixture(ctx){
+    function ComputedCoreFixture(p){
         var self = this;
 
         this.forComputed ={
@@ -21,7 +21,7 @@ define(['c/Computed'], function(){
 
         this.itemsList = [];
         this.makeComputed = function(f){
-            var constructor = ctx.create('computedConstructor', self.itemsList);
+            var constructor = p.ctx.create('computedConstructor', self.itemsList);
             return constructor.getComputed(f);
         }
     }

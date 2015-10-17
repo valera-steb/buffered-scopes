@@ -8,11 +8,8 @@ define(['require_for_di-lite'], function (CtxProvider) {
         beforeEach(function (done) {
             (new CtxProvider())
                 .buildCtx(['c/Domain'], function (ctx) {
-                    ctx.get('ComputedDomain')
-                        .ready.then(function (d) {
-                            domain = d;
-                            done();
-                        })
+                    domain = ctx.get('ComputedDomain');
+                    done();
                 });
         });
 

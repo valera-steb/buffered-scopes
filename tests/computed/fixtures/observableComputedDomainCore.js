@@ -2,7 +2,7 @@
  * Created on 09.10.2015.
  */
 define(['c/Observable'], function () {
-    function ObservableComputedDomainCore(ctx) {
+    function ObservableComputedDomainCore(p) {
         var self = this,
             uid = 0;
 
@@ -36,7 +36,7 @@ define(['c/Observable'], function () {
         };
 
         this.makeObservable = function (value) {
-            var constructor = ctx.create('observableConstructor', ++uid);
+            var constructor = p.ctx.create('observableConstructor', ++uid);
             return constructor.getObservable(value);
         };
     }
