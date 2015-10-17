@@ -15,9 +15,9 @@ define(['./PubSub'], function (PubSub) {
             dependencies: undefined,
 
             calculate: function () {
-                core.enter.calculation(uid);
+                //core.enter.calculation(uid);
                 var newValue = m.f();
-                core.exit.calculation(uid);
+                //core.exit.calculation(uid);
 
                 m.setValue(newValue);
             },
@@ -69,7 +69,7 @@ define(['./PubSub'], function (PubSub) {
         };
 
 
-        this.dependencies = "core=computedDomainCore";
+        this.dependencies = "core=IDomain";
 
 
         this.getComputed = function (f) {

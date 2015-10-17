@@ -13,8 +13,8 @@ require.config({
 
     callback: function () {
         var specs = [
+            'iDomain',
             'domain',
-            'domainProto',
             'computed',
             'observable',
             'pubSub'

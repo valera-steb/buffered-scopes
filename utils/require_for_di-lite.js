@@ -100,10 +100,10 @@ define('require_for_di-lite', ['require_for_di-lite/registrationUtils',
                 baseSubName = registrat.getUniqueProxyName(
                     ctx.map, baseSubName);
 
-                registrat.fillProxyType(type, ctx.map[type.parent], baseSubName);
+                var newType = registrat.fillProxyType(type, ctx.map[type.parent], baseSubName);
 
                 ctx.map[baseSubName] = ctx.map[baseName];
-                ctx['addTypes']([type]);
+                ctx['addTypes']([newType]);
             }
         }
 
@@ -277,15 +277,14 @@ define('require_for_di-lite/registrationUtils', [], {
         return testName;
     },
 
-    swapTypes: function () {
-
-    },
-
     fillProxyType: function (proxy, base, baseName) {
-        proxy.name = proxy.parent;
-        proxy.strategy = di.factory.proto;
-        proxy.factory = di.factory.func;
-        proxy.parent = baseName;
+        return {
+            name: proxy.parent,
+            c: proxy.c,
+            strategy: di.factory.proto,
+            factory: di.factory.func,
+            parent: baseName
+        }
     }
 });
 

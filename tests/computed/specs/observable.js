@@ -8,7 +8,7 @@ define(['c/Observable'], function (Observable) {
         beforeEach(function (done) {
 
             function receiveDomain(ctx) {
-                iDomain = ctx.get('computedDomainCore');
+                iDomain = ctx.get('IDomain');
                 o = iDomain.makeObservable();
                 done();
             }

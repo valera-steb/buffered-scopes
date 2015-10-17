@@ -23,7 +23,7 @@ define(['./PubSub'], function (PubSub) {
         };
 
 
-        this.dependencies = "core=computedDomainCore";
+        this.dependencies = "core=IDomain";
 
 
         this.getObservable = function (value) {

@@ -42,7 +42,7 @@ define(['c/Observable'], function () {
     }
 
     return {
-        name: 'computedDomainCore',
+        name: 'IDomain',
         c: ObservableComputedDomainCore,
         subTypes: arguments,
         getScope: true

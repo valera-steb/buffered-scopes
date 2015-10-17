@@ -1,9 +1,10 @@
 /**
  * Created by steb on 12.10.15.
  */
-define(['require_for_di-lite/privateScopeWrapper'], function(Wrapper){
-    function IDomain(p){
-        var m;
+define(['require_for_di-lite/privateScopeWrapper', './DomainModel',
+    './Observable', './Computed'], function (Wrapper) {
+    function IDomain(p) {
+        var m = p.ctx.get('domainModel');
 
         this.buildInterface = function (outer) {
             outer['makeObservable'] = function (value) {
@@ -35,19 +36,20 @@ define(['require_for_di-lite/privateScopeWrapper'], function(Wrapper){
 
         this.forComputed = {
             enter: {
-                build: m.tracker.start(id),
+                build: m.tracker.start,
                 getValue: m.tracker.trackGet
             },
             exit: {
-                build: m.tracker.end(id)
+                build: m.tracker.end
             },
             finalizeBuild: m.finalizer.complete
         };
     }
 
-    return new Wrapper('IDomain', {
+    return new Wrapper('ComputedDomain', {
         name: 'IDomain',
         c: IDomain,
-        subTypes: arguments
+        subTypes: arguments,
+        getScope: true
     })
 });

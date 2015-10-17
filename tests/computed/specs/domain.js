@@ -2,12 +2,12 @@
  * Created on 29.09.2015.
  */
 define(['require_for_di-lite'], function (CtxProvider) {
-    describe('Computed/Domain', function () {
+    describe('Computed/IDomain', function () {
         var domain;
 
         beforeEach(function (done) {
             (new CtxProvider())
-                .buildCtx(['c/Domain'], function (ctx) {
+                .buildCtx(['c/IDomain'], function (ctx) {
                     domain = ctx.get('ComputedDomain');
                     done();
                 });
@@ -18,21 +18,6 @@ define(['require_for_di-lite'], function (CtxProvider) {
             it('даёт минимум - максимально ограничивая функцию в compute');
 
             describe('уточнить', function () {
-                it('стоит ли позволять менять значение observable в обработчике?');
-
-                it('прослеживание последовательности вызовов в реальном времени ' +
-                    'и поиск в ней коллизий');
-                it('а разве текущая запланированная реализация не динамическая?')
-            });
-
-            describe('циклические зависимости', function () {
-                xit('observable 1->2, 2->1 - связанные по subscribe');
-
-                xit('computed 1->2 2->1');
-
-                xit('computed 1->2 2->3 3->1');
-
-                xit('computed 1->2 observable 2->3 computed 3->1, цикл через 1->2 по subscribe');
             });
         });
 

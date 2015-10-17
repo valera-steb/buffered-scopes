@@ -1,19 +1,28 @@
 /**
+ * Created by steb on 17.10.15.
+ */
+/**
  * Created by steb on 10.10.15.
  */
-define(['require_for_di-lite'], function (CtxProvider) {
-    describe('Computed/CorePrototype - сценарии использования', function () {
-        var d, proto;
+define(['require_for_di-lite', 'proxies/IDomain'], function (CtxProvider, IDomainProxy) {
+    describe('Computed/IDomain - сценарии использования', function () {
+        var d;
 
         beforeEach(function (done) {
             function receiveCtx(ctx) {
-                proto = ctx.get('computedDomainCore');
-                d = {}, proto.buildInterface(d);
+                d = ctx.create('ComputedDomain', {
+                    ctx: ctx,
+                    swappers: {
+                        'ComputedDomain': function (provider, ctx) {
+                            ctx.addProxy(IDomainProxy);
+                        }
+                    }
+                });
                 done();
             }
 
             (new CtxProvider)
-                .buildCtx(['fixtures/domainCorePrototype'],
+                .buildCtx(['c/IDomain'],
                 receiveCtx);
         });
 
@@ -27,7 +36,7 @@ define(['require_for_di-lite'], function (CtxProvider) {
             });
             o(t1);
 
-            expect(proto.log).toBe('+os+os-os');
+            expect(d.log()).toBe('+os+os-os');
             expect(o()).toBe(t1);
         });
 
@@ -42,7 +51,7 @@ define(['require_for_di-lite'], function (CtxProvider) {
             });
             o(t1);
 
-            expect(proto.log).toBe('+os+os-os');
+            expect(d.log()).toBe('+os+os-os');
             expect(o()).toBe(t1);
         });
 
@@ -51,14 +60,14 @@ define(['require_for_di-lite'], function (CtxProvider) {
                 t1 = 't1', t2 = 't2', t3 = 't3', t4 = 't4',
                 o1 = d.makeObservable(t1),
                 o2 = d.makeObservable(t2);
-            proto.addUid = true;
+            d.addUid(true);
 
             o1.subscribe(function () {
                 o2(t4);
             });
             o1(t3);
 
-            expect(proto.log).toBe('+os1+os2-os1');
+            expect(d.log()).toBe('+os1+os2-os1');
             expect(o1()).toBe(t3);
             expect(o2()).toBe(t2);
         });
@@ -68,13 +77,13 @@ define(['require_for_di-lite'], function (CtxProvider) {
                 t1 = 't1', t2 = 't2', t3 = 't3', t4 = 't4',
                 o1 = d.makeObservable(t1),
                 o2 = d.makeObservable(t2);
-            proto.addUid = true;
+            d.addUid(true);
 
             var c1 = d.makeComputed(function () {
                 return o1() + o2();
             });
 
-            expect(proto.log).toBe('+cb3+og1f+og2f-cb3');
+            expect(d.log()).toBe('+cb3+og1f+og2f-cb3+fb');
             expect(c1()).toBe(t1 + t2);
         });
 
@@ -90,12 +99,12 @@ define(['require_for_di-lite'], function (CtxProvider) {
                     o2(t[4]);
                 return key;
             });
-            proto.addUid = true;
-            proto.log = '';
+            d.addUid(true);
+            d.log('');
 
             o1(t[3]);
 
-            expect(proto.log).toBe('+os1+og1f+os2-os1');
+            expect(d.log()).toBe('+os1+og1f+os2-os1');
             expect(c1()).toBe(t[1]);
         });
 
@@ -103,7 +112,7 @@ define(['require_for_di-lite'], function (CtxProvider) {
             var
                 t = ['t0', 't1', 't2'],
                 c1, c2;
-            proto.addUid = true;
+            d.addUid ( true);
 
             function test() {
                 c1 = d.makeComputed(function () {
@@ -115,7 +124,7 @@ define(['require_for_di-lite'], function (CtxProvider) {
             };
 
             expect(test).toThrow();
-            expect(proto.log).toBe('+cb1+cb2');
+              expect(d.log()).toBe('+cb1+cb2');
         });
 
 
@@ -155,15 +164,15 @@ define(['require_for_di-lite'], function (CtxProvider) {
             });
 
             it('в подписке на computed запрещёно менять значение любых observable', function () {
-                proto.addUid = true;
-                proto.log = '';
+                d.addUid ( true);
+                d.log ('');
                 c1.subscribe(function (v) {
                     o1(t[0]);
                 });
 
                 o2(t[3]);
 
-                expect(proto.log).toBe('+os2+og1f+og2f+os1-os2');
+                    expect(d.log()).toBe('+os2+og1f+og2f+os1-os2');
                 expect(o1()).toBe(t[1]);
                 expect(c1()).toBe(t[1] + t[3]);
             });
@@ -232,33 +241,33 @@ define(['require_for_di-lite'], function (CtxProvider) {
                 expect(o1()).toBe(t[0]);
             });
 
-            it('в действии можно создавать computed', function(){
+            it('в действии можно создавать computed', function () {
                 var c;
 
-                function after(){
-                    c = d.makeComputed(function(){
-                        return o1()+t[4];
+                function after() {
+                    c = d.makeComputed(function () {
+                        return o1() + t[4];
                     });
                 }
 
-                o1.subscribe(function(){
+                o1.subscribe(function () {
                     d.afterActiveChanges(after);
                 });
                 expect(c).toBeUndefined();
 
 
                 o1(t[0]);
-                expect(c()).toBe(t[0]+t[4]);
+                expect(c()).toBe(t[0] + t[4]);
             });
 
             it('количество продолжений ограниченно', function () {
                 o1.subscribe(function () {
                     d.afterActiveChanges(function () {
-                            o1(t[0]);
+                        o1(t[0]);
                     });
                 });
 
-                function test(){
+                function test() {
                     o1(t[3]);
                 }
 
