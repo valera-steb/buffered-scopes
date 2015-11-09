@@ -19,6 +19,7 @@
     "q": "~2.0.2",
     "requirejs-bower": "~2.1.20",
     "di-lite": "~0.3.3",
-    "when": "~3.7.3"
+    "when": "~3.7.3",
+    "browsered-jasmine-cucumber": "https://raw.githubusercontent.com/valera-steb/jasmine-cucumber/extending-syntax/dist/browsered-jasmine-cucumber.js"
   }
 }

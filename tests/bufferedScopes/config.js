@@ -15,7 +15,8 @@ require.config({
     callback: function () {
         var specs = [
             'iDomain',
-            'paramsWrapper'
+            'paramsWrapper',
+            'wrappedFunction'
         ];
 
         (function getSpec(id) {
